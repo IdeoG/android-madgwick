@@ -13,6 +13,7 @@ public class MadgwickAHRS {
 	private float samplePeriod;
 	private float beta;
 	private float[] quaternion;
+	public float norm;
 
 	public float[] getEulerAngles() {
 		float[] angles = new float[3];
@@ -22,26 +23,14 @@ public class MadgwickAHRS {
 		float y = quaternion[2];
 		float z = quaternion[3];
 
-		float sqw = w * w;
-		float sqx = x * x;
-		float sqy = y * y;
-		float sqz = z * z;
-		float unit = sqx + sqy + sqz + sqw; // if normalized is one, otherwise
-		// is correction factor
-		float test = x * y + z * w;
-		if (test > 0.499 * unit) { // singularity at north pole
-			angles[1] = (float) (2 * Math.atan2(x, w));
-			angles[2] = (float) Math.PI;
-			angles[0] = 0;
-		} else if (test < -0.499 * unit) { // singularity at south pole
-			angles[1] = (float) (-2 * Math.atan2(x, w));
-			angles[2] = (float) -Math.PI;
-			angles[0] = 0;
-		} else {
-			angles[1] = (float) Math.atan2(2 * y * w - 2 * x * z, sqx - sqy - sqz + sqw); // roll or heading
-			angles[2] = (float) Math.asin(2 * test / unit); // pitch or attitude
-			angles[0] = (float) Math.atan2(2 * x * w - 2 * y * z, -sqx + sqy - sqz + sqw); // yaw or bank
-		}
+		float sqw = w*w;
+		float sqx = x*x;
+		float sqy = y*y;
+		float sqz = z*z;
+		angles[0] = (float)(Math.toDegrees(Math.atan2(2.0 * (x*y + z*w),(sqx - sqy - sqz + sqw)))) ;
+		angles[1] = (float)(Math.toDegrees(Math.atan2(2.0 * (y*z + x*w),(-sqx - sqy + sqz + sqw))));
+		angles[2] = (float)(Math.toDegrees(Math.asin(-2.0 * (x*z - y*w))));
+
 		return angles;
 	}
 
@@ -153,7 +142,6 @@ public class MadgwickAHRS {
 																								// variable
 																								// for
 																								// readability
-		float norm;
 		float hx, hy, _2bx, _2bz;
 		float s1, s2, s3, s4;
 		float qDot1, qDot2, qDot3, qDot4;
@@ -271,6 +259,7 @@ public class MadgwickAHRS {
 		quaternion[1] = q2 * norm;
 		quaternion[2] = q3 * norm;
 		quaternion[3] = q4 * norm;
+
 	}
 
 	/**
