@@ -23,7 +23,7 @@ public class MainActivity extends Activity {
     private Sensor mGyroscope;
     private Sensor mMagnetometr;
     private Sensor mOrientation;
-    private MadgwickAHRS mMadgwickAHRS;
+    private MadgwickAHRS mMadgwickAHRS = new MadgwickAHRS(0.01f, 0.00001f);
     private int counter = 0;
 
 
@@ -130,9 +130,7 @@ public class MainActivity extends Activity {
         GuiTimer guiTimer;
         mTimer = new Timer();
         guiTimer = new GuiTimer();
-        mTimer.schedule(guiTimer, 0, 20); // 10Hz
-
-        mMadgwickAHRS = new MadgwickAHRS(0.020f);
+        mTimer.schedule(guiTimer, 1000, 10); // 100Hz
     }
 
     @Override
@@ -140,13 +138,13 @@ public class MainActivity extends Activity {
         super.onResume();
         mSensorManager.registerListener(onRecieveAccListener,
                 mAcceleration,
-                SensorManager.SENSOR_DELAY_GAME); // 50Hz, 20 ms delay
+                SensorManager.SENSOR_DELAY_FASTEST); // 200Hz, 5 ms delay
         mSensorManager.registerListener(onRecieveGyroListener,
                 mGyroscope,
-                SensorManager.SENSOR_DELAY_GAME);
+                SensorManager.SENSOR_DELAY_FASTEST);
         mSensorManager.registerListener(onRecieveOrientationListener,
                 mOrientation,
-                SensorManager.SENSOR_DELAY_GAME);
+                SensorManager.SENSOR_DELAY_FASTEST);
         mSensorManager.registerListener(onRecieveMagnetometrListener,
                 mMagnetometr,
                 SensorManager.SENSOR_DELAY_GAME);
